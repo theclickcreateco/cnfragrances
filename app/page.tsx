@@ -1,121 +1,94 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import Hero from "@/components/Hero";
 import AddToCartButton from "@/components/AddToCartButton";
+import { prisma } from "@/app/db";
 
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Midnight Bloom",
-    gender: "Women",
-    price: 125.00,
-    image: "/products/women-1.jpg" // placeholder
-  },
-  {
-    id: 2,
-    name: "Oud Wood Reserve",
-    gender: "Men",
-    price: 145.00,
-    image: "/products/men-1.jpg"
-  },
-  {
-    id: 3,
-    name: "Oceanic Vetiver",
-    gender: "Men",
-    price: 95.00,
-    image: "/products/men-2.jpg"
-  },
-  {
-    id: 4,
-    name: "Spiced Leather",
-    gender: "Men",
-    price: 110.00,
-    image: "/products/men-3.jpg"
-  },
-  {
-    id: 5,
-    name: "Noir Absolute",
-    gender: "Men",
-    price: 130.00,
-    image: "/products/men-4.jpg"
-  }
-];
+export default async function Home() {
+  const featuredProducts = await prisma.product.findMany({
+    where: { isFeatured: true },
+    take: 5,
+  });
 
-export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      {/* On mobile: 720x1080 aspect ratio (2/3) */}
-      {/* On desktop: 1080x720 aspect ratio (3/2) */}
-      <section className="relative w-full overflow-hidden flex items-center bg-gray-900 aspect-[2/3] md:aspect-[3/2] max-h-[85vh]">
-
-        {/* Background Overlay */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-          {/* Real image will be mounted here 
-             <Image src="/hero-image.jpg" alt="Luxury Fragrance Collection" fill className="object-cover -z-10" priority />
-          */}
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 w-full px-6 md:px-16 max-w-7xl mx-auto flex flex-col justify-end md:justify-center h-full pb-20 md:pb-0">
-          <div className="max-w-xl text-center md:text-left space-y-6">
-            <span className="text-gray-300 tracking-[0.3em] text-xs uppercase font-medium">New Arrivals 2026</span>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-white uppercase tracking-wider leading-tight drop-shadow-lg">
-              Discover Your <br className="hidden md:block" /> Signature
-            </h1>
-            <p className="text-lg md:text-xl text-gray-200 font-light drop-shadow-md">
-              An exclusive collection of premium fragrances designed to leave a lasting impression.
-            </p>
-            <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Link href="#featured" className="inline-flex items-center justify-center px-8 py-4 bg-white text-black font-semibold uppercase tracking-widest text-sm hover:bg-gray-200 transition-colors">
-                Shop Collection
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       {/* Featured Products */}
-      <section id="featured" className="py-24 bg-gray-50">
+      <section id="featured" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif uppercase tracking-widest mb-4">Find Your Signature</h2>
-            <div className="w-16 h-1 bg-black mx-auto"></div>
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div className="space-y-4">
+              <span className="text-gray-400 tracking-[0.2em] text-xs uppercase font-medium">Curated Selection</span>
+              <h2 className="text-4xl md:text-5xl font-serif uppercase tracking-tight">Essential Scents</h2>
+              <div className="w-20 h-0.5 bg-black"></div>
+            </div>
+            <Link href="/catalog" className="text-sm font-bold uppercase tracking-widest border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-all">
+              View All Products
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
             {featuredProducts.map((product) => (
-              <div key={product.id} className="group flex flex-col bg-white p-4 shadow-sm hover:shadow-xl transition-all duration-300">
-
+              <div key={product.id} className="group relative flex flex-col bg-transparent pb-8 transition-all duration-500">
                 {/* Product Image Container */}
-                <div className="relative aspect-[3/4] mb-6 bg-gray-100 overflow-hidden cursor-pointer group-hover:opacity-90 transition-opacity">
-                  {/* <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" /> */}
+                <div className="relative aspect-[3/4] mb-6 overflow-hidden bg-gray-50 border border-gray-100">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+                  />
 
-                  {/* Placeholder text logic */}
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-serif text-xs uppercase tracking-widest">
-                    {product.name} <br /> Image
+                  {/* Category Badge */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="bg-white/90 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-black shadow-sm">
+                      {product.category}
+                    </span>
                   </div>
 
-                  {/* Quick Add Overlay */}
-                  <AddToCartButton product={product} />
+                  {/* Add to Cart Overlay */}
+                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute bottom-0 left-0 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-20">
+                    <AddToCartButton product={product} />
+                  </div>
                 </div>
 
                 {/* Product Details */}
-                <div className="text-center flex-grow flex flex-col justify-end">
-                  <span className="text-xs text-gray-400 uppercase tracking-widest mb-2 block">{product.gender}</span>
-                  <Link href={`/product/${product.id}`} className="block">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2 hover:text-gray-600 transition-colors">{product.name}</h3>
-                  </Link>
-                  <p className="text-gray-600 font-semibold">${product.price.toFixed(2)}</p>
+                <div className="space-y-3 px-1">
+                  <div className="flex justify-between items-start gap-2">
+                    <Link href={`/product/${product.id}`} className="block group/link">
+                      <h3 className="text-base font-medium text-gray-900 group-hover/link:text-gray-500 transition-colors uppercase tracking-wide leading-snug">
+                        {product.name}
+                      </h3>
+                    </Link>
+                  </div>
+                  <p className="text-gray-900 font-semibold text-lg">${product.price.toFixed(2)}</p>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      </section>
 
+      {/* Aesthetic Spacer / Call to Action */}
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-gray-50">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="grid grid-cols-12 h-full w-full">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="border-r border-gray-900 h-full"></div>
+            ))}
+          </div>
+        </div>
+        <div className="relative z-10 text-center space-y-8 px-6">
+          <h3 className="text-3xl md:text-5xl font-serif italic text-gray-800 max-w-3xl mx-auto leading-relaxed">
+            "Fragrance is the most intense form of memory"
+          </h3>
+          <p className="text-gray-500 uppercase tracking-[0.3em] text-sm">— Christian Dior</p>
         </div>
       </section>
     </div>
   );
 }
+

@@ -31,16 +31,16 @@ export default function Header() {
                         <Link href="/" className="flex items-center">
                             {/* Placeholder logo - will use real image when added */}
                             <div className="relative w-[180px] h-[40px] flex items-center justify-center">
-                                <span className="font-serif text-2xl font-bold tracking-widest uppercase">CN Fragrances</span>
-                                {/* 
-                <Image 
-                  src="/cnfragrance-logo.png" 
-                  alt="CN Fragrances Logo" 
-                  fill 
-                  className="object-contain"
-                  priority
-                /> 
-                */}
+                                {/* <span className="font-serif text-2xl font-bold tracking-widest uppercase">CN Fragrances</span> */}
+
+                                <Image
+                                    src="/cn-fragrances-logo.png"
+                                    alt="CN Fragrances Logo"
+                                    fill
+                                    className="object-contain"
+                                    priority
+                                />
+
                             </div>
                         </Link>
                     </div>

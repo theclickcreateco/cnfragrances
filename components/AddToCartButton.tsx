@@ -4,11 +4,11 @@ import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 
 interface Product {
-    id: number;
+    id: string;
     name: string;
     price: number;
-    image: string;
-    gender: string;
+    imageUrl: string;
+    category: string;
 }
 
 export default function AddToCartButton({ product }: { product: Product }) {
@@ -17,16 +17,23 @@ export default function AddToCartButton({ product }: { product: Product }) {
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        addItem(product);
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            imageUrl: product.imageUrl,
+            category: product.category,
+        });
     };
 
     return (
         <div
             onClick={handleAddToCart}
-            className="absolute bottom-0 left-0 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-black/80 backdrop-blur-sm text-white py-3 flex justify-center items-center gap-2 cursor-pointer"
+            className="w-full bg-black/90 backdrop-blur-sm text-white py-4 flex justify-center items-center gap-3 cursor-pointer hover:bg-black transition-colors"
         >
             <ShoppingBag className="w-4 h-4" />
-            <span className="text-xs font-semibold uppercase tracking-widest">Add to Cart</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Add to Cart</span>
         </div>
     );
 }
+
