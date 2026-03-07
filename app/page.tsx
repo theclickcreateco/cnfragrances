@@ -30,7 +30,7 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
-            {featuredProducts.map((product) => (
+            {featuredProducts.map((product: any) => (
               <div key={product.id} className="group relative flex flex-col bg-transparent pb-8 transition-all duration-500">
                 {/* Product Image Container */}
                 <div className="relative aspect-[3/4] mb-6 overflow-hidden bg-gray-50 border border-gray-100">

@@ -177,7 +177,7 @@ export default function CheckoutPage() {
                                         <div className="absolute inset-0 flex items-center justify-center text-[8px] text-gray-400 uppercase tracking-widest text-center px-1">
                                             {item.name}
                                         </div>
-                                        {/* <Image src={item.image} alt={item.name} fill className="object-cover" /> */}
+                                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                                         {/* Item Quantity Badge */}
                                         <div className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
                                             {item.quantity}
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="flex-grow flex flex-col justify-center">
                                         <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">{item.gender}</p>
+                                        <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">{item.category}</p>
                                         <p className="text-sm font-semibold mt-2">${(item.price * item.quantity).toFixed(2)}</p>
                                     </div>
                                 </div>
