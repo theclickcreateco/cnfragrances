@@ -134,7 +134,7 @@ export default function CheckoutPage() {
                             <div className="space-y-4">
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address *</label>
-                                    <input type="email" id="email" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" placeholder="your@email.com" />
+                                    <input type="email" id="email" name="email" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" placeholder="your@email.com" />
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <input type="checkbox" id="newsletter" className="w-4 h-4 text-black border-gray-300 focus:ring-black rounded-sm" />

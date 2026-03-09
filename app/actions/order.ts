@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from '@/app/db'
+import { auth } from '@/auth'
 
 export async function createOrder(data: {
     trackingId: string;
@@ -15,7 +16,10 @@ export async function createOrder(data: {
     }[];
 }) {
     try {
-        console.log('Attempting to create order with trackingId:', data.trackingId)
+        const session = await auth()
+        const userId = session?.user?.id
+
+        console.log('Attempting to create order with trackingId:', data.trackingId, 'for user:', userId || 'Guest')
         const order = await prisma.order.create({
             data: {
                 trackingId: data.trackingId,
@@ -23,6 +27,7 @@ export async function createOrder(data: {
                 contactEmail: data.contactEmail,
                 contactPhone: data.contactPhone,
                 shippingAddress: data.shippingAddress,
+                userId: userId,
                 orderItems: {
                     create: data.items.map((item) => ({
                         productId: item.productId,
