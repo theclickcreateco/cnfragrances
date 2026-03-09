@@ -14,7 +14,7 @@ export async function registerWithPhone(formData: FormData) {
 
     try {
         const existingUser = await prisma.user.findUnique({
-            where: { phone }
+            where: { phone } as any
         });
 
         if (existingUser) {
@@ -28,7 +28,7 @@ export async function registerWithPhone(formData: FormData) {
                 phone,
                 password: hashedPassword,
                 name: name || null
-            }
+            } as any
         });
 
         return { success: true };

@@ -33,12 +33,14 @@ export default function AuthForms() {
             const loginResult = await signIn("credentials", {
                 phone,
                 password,
-                redirect: true,
+                redirect: false,
                 callbackUrl: "/account",
-            });
+            }) as any;
 
             if (loginResult?.error) {
                 setError("Invalid phone number or password");
+            } else {
+                window.location.href = "/account";
             }
         } catch (err) {
             setError("Something went wrong. Please try again.");
