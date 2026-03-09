@@ -64,7 +64,7 @@ export default async function Home() {
                       </h3>
                     </Link>
                   </div>
-                  <p className="text-gray-900 font-semibold text-lg">${product.price.toFixed(2)}</p>
+                  <p className="text-gray-900 font-semibold text-lg">Rs. {product.price.toFixed(2)}</p>
                 </div>
               </div>
             ))}

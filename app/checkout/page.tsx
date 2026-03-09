@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
-import { CheckCircle2, ChevronRight, Lock } from "lucide-react";
+import { CheckCircle2, ChevronRight, Lock, Loader2, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { createOrder } from "@/app/actions/order";
 
 export default function CheckoutPage() {
     const { items, totalPrice, clearCart } = useCartStore();
@@ -16,18 +17,51 @@ export default function CheckoutPage() {
 
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [trackingId, setTrackingId] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handlePlaceOrder = (e: React.FormEvent) => {
+    const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsSubmitting(true);
+        setError(null);
+
+        const formData = new FormData(e.currentTarget);
+        const email = formData.get("email") as string;
+        const firstName = formData.get("firstName") as string;
+        const lastName = formData.get("lastName") as string;
+        const address = formData.get("address") as string;
+        const city = formData.get("city") as string;
+        const postalCode = formData.get("postalCode") as string;
+        const phone = formData.get("phone") as string;
+
+        const fullAddress = `${firstName} ${lastName}, ${address}, ${city}, ${postalCode}`;
 
         // Generate an elegant, realistic Tracking ID format: CN-YYYYMMDD-XXXX
         const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase();
         const newTrackingId = `CN-${date}-${randomChars}`;
 
-        setTrackingId(newTrackingId);
-        setOrderPlaced(true);
-        clearCart();
+        const result = await createOrder({
+            trackingId: newTrackingId,
+            totalAmount: totalPrice(),
+            contactEmail: email,
+            contactPhone: phone,
+            shippingAddress: fullAddress,
+            items: items.map((item) => ({
+                productId: item.id,
+                quantity: item.quantity,
+                price: item.price,
+            })),
+        });
+
+        if (result.success) {
+            setTrackingId(newTrackingId);
+            setOrderPlaced(true);
+            clearCart();
+        } else {
+            setError(result.error || "Something went wrong. Please try again.");
+        }
+        setIsSubmitting(false);
     };
 
     if (!isClient) return null;
@@ -115,27 +149,27 @@ export default function CheckoutPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First name *</label>
-                                    <input type="text" id="firstName" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
+                                    <input type="text" id="firstName" name="firstName" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
                                 </div>
                                 <div>
                                     <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">Last name *</label>
-                                    <input type="text" id="lastName" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
+                                    <input type="text" id="lastName" name="lastName" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
-                                    <input type="text" id="address" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" placeholder="Street address or P.O. Box" />
+                                    <input type="text" id="address" name="address" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" placeholder="Street address or P.O. Box" />
                                 </div>
                                 <div>
                                     <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">City *</label>
-                                    <input type="text" id="city" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
+                                    <input type="text" id="city" name="city" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
                                 </div>
                                 <div>
                                     <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">Postal code *</label>
-                                    <input type="text" id="postalCode" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
+                                    <input type="text" id="postalCode" name="postalCode" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-                                    <input type="tel" id="phone" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
+                                    <input type="tel" id="phone" name="phone" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" />
                                 </div>
                             </div>
                         </section>
@@ -154,11 +188,33 @@ export default function CheckoutPage() {
                             </div>
                         </section>
 
+                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 p-4 flex items-start space-x-3 mt-8">
+                                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                                <p className="text-sm text-red-800">{error}</p>
+                            </div>
+                        )}
+
                         {/* Mobile submit button (hidden on large screens) */}
                         <div className="block lg:hidden mt-8">
-                            <button type="submit" form="checkout-form" className="w-full px-8 py-5 bg-black text-white hover:bg-gray-800 uppercase tracking-widest text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors font-medium flex justify-center items-center space-x-2">
-                                <Lock className="w-4 h-4" />
-                                <span>Complete Order</span>
+                            <button
+                                type="submit"
+                                form="checkout-form"
+                                disabled={isSubmitting}
+                                className="w-full px-8 py-5 bg-black text-white hover:bg-gray-800 uppercase tracking-widest text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all font-medium flex justify-center items-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>Proccesing...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="w-4 h-4" />
+                                        <span>Complete Order</span>
+                                    </>
+                                )}
                             </button>
                         </div>
 
@@ -186,7 +242,7 @@ export default function CheckoutPage() {
                                     <div className="flex-grow flex flex-col justify-center">
                                         <p className="text-sm font-medium text-gray-900">{item.name}</p>
                                         <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">{item.category}</p>
-                                        <p className="text-sm font-semibold mt-2">${(item.price * item.quantity).toFixed(2)}</p>
+                                        <p className="text-sm font-semibold mt-2">Rs. {(item.price * item.quantity).toFixed(2)}</p>
                                     </div>
                                 </div>
                             ))}
@@ -195,7 +251,7 @@ export default function CheckoutPage() {
                         <div className="border-t border-gray-200 pt-6 space-y-4">
                             <div className="flex justify-between text-sm text-gray-600">
                                 <span>Subtotal</span>
-                                <span>${totalPrice().toFixed(2)}</span>
+                                <span>Rs. {totalPrice().toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-600">
                                 <span>Shipping</span>
@@ -203,13 +259,27 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex justify-between text-lg font-medium text-gray-900 pt-4 border-t border-gray-200">
                                 <span>Total</span>
-                                <span>${totalPrice().toFixed(2)}</span>
+                                <span>Rs. {totalPrice().toFixed(2)}</span>
                             </div>
                         </div>
 
-                        <button type="submit" form="checkout-form" className="hidden lg:flex w-full mt-8 px-8 py-5 bg-black text-white hover:bg-gray-800 uppercase tracking-widest text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors font-medium justify-center items-center space-x-2">
-                            <Lock className="w-4 h-4" />
-                            <span>Complete Order</span>
+                        <button
+                            type="submit"
+                            form="checkout-form"
+                            disabled={isSubmitting}
+                            className="hidden lg:flex w-full mt-8 px-8 py-5 bg-black text-white hover:bg-gray-800 uppercase tracking-widest text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all font-medium justify-center items-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span>Processing order...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Lock className="w-4 h-4" />
+                                    <span>Complete Order</span>
+                                </>
+                            )}
                         </button>
 
                     </div>
