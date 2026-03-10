@@ -3,17 +3,24 @@
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
-import { CheckCircle2, ChevronRight, Lock, Loader2, AlertCircle } from "lucide-react";
+import { CheckCircle2, ChevronRight, Lock, Loader2, AlertCircle, Plus, Minus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { createOrder } from "@/app/actions/order";
 
+import { useSession } from "next-auth/react";
+
 export default function CheckoutPage() {
-    const { items, totalPrice, clearCart } = useCartStore();
+    const { data: session } = useSession();
+    const { items, totalPrice, clearCart, updateQuantity, removeItem } = useCartStore();
     const [isClient, setIsClient] = useState(false);
+    const [email, setEmail] = useState("");
 
     useEffect(() => {
         setIsClient(true);
-    }, []);
+        if (session?.user?.email) {
+            setEmail(session.user.email);
+        }
+    }, [session]);
 
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [trackingId, setTrackingId] = useState("");
@@ -134,7 +141,16 @@ export default function CheckoutPage() {
                             <div className="space-y-4">
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address *</label>
-                                    <input type="email" id="email" name="email" required className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors" placeholder="your@email.com" />
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        required
+                                        className="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors"
+                                        placeholder="your@email.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <input type="checkbox" id="newsletter" className="w-4 h-4 text-black border-gray-300 focus:ring-black rounded-sm" />
@@ -228,21 +244,46 @@ export default function CheckoutPage() {
 
                         <div className="space-y-6 mb-8 max-h-[40vh] overflow-y-auto pr-2">
                             {items.map((item) => (
-                                <div key={item.id} className="flex gap-4">
+                                <div key={item.id} className="flex gap-4 group">
                                     <div className="relative w-20 h-24 bg-gray-200 flex-shrink-0 border border-gray-200">
                                         <div className="absolute inset-0 flex items-center justify-center text-[8px] text-gray-400 uppercase tracking-widest text-center px-1">
                                             {item.name}
                                         </div>
                                         <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                                        {/* Item Quantity Badge */}
-                                        <div className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
-                                            {item.quantity}
-                                        </div>
                                     </div>
-                                    <div className="flex-grow flex flex-col justify-center">
-                                        <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">{item.category}</p>
-                                        <p className="text-sm font-semibold mt-2">Rs. {(item.price * item.quantity).toFixed(2)}</p>
+                                    <div className="flex-grow flex flex-col justify-between py-1">
+                                        <div>
+                                            <div className="flex justify-between items-start">
+                                                <p className="text-sm font-medium text-gray-900">{item.name}</p>
+                                                <button
+                                                    onClick={() => removeItem(item.id)}
+                                                    className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                                    title="Remove item"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">{item.category}</p>
+                                        </div>
+
+                                        <div className="flex justify-between items-end">
+                                            <div className="flex items-center border border-gray-200 rounded-sm">
+                                                <button
+                                                    onClick={() => item.quantity > 1 ? updateQuantity(item.id, item.quantity - 1) : removeItem(item.id)}
+                                                    className="p-1 hover:bg-gray-100 transition-colors"
+                                                >
+                                                    <Minus className="w-3 h-3" />
+                                                </button>
+                                                <span className="text-[10px] font-bold w-6 text-center">{item.quantity}</span>
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    className="p-1 hover:bg-gray-100 transition-colors"
+                                                >
+                                                    <Plus className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                            <p className="text-sm font-semibold">Rs. {(item.price * item.quantity).toFixed(2)}</p>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

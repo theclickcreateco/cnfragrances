@@ -6,7 +6,6 @@ import AuthForms from "@/components/AuthForms";
 
 export default async function AccountPage() {
     const session = await auth();
-
     if (!session) {
         return (
             <div className="max-w-7xl mx-auto px-4 py-24 min-h-[80vh] flex flex-col items-center justify-center">

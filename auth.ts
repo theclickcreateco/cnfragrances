@@ -40,16 +40,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         signIn: "/account",
     },
     callbacks: {
-        session({ session, user, token }) {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
+        async session({ session, token }) {
             if (session.user) {
-                // For database adapter, 'user' is the db user object
-                // For credentials, we might need to use 'token'
-                session.user.id = user?.id || token?.sub || "";
+                session.user.id = token.id as string;
             }
             return session;
         },
     },
     session: {
         strategy: "jwt", // Required for Credentials provider
-    }
+    },
+    trustHost: true,
 })

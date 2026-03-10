@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   description: "Discover premium fragrances for men and women.",
 };
 
+import Toaster from "@/components/Toaster";
+import Providers from "@/components/Providers";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,11 +32,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <Header />
-        <main className="flex-grow pt-20">
-          {children}
-        </main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="flex-grow pt-20">
+            {children}
+          </main>
+          <Footer />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

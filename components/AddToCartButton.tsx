@@ -1,7 +1,9 @@
 "use client";
 
-import { ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { ShoppingBag, Check, Loader2 } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { showToast } from "./Toaster";
 
 interface Product {
     id: string;
@@ -13,10 +15,20 @@ interface Product {
 
 export default function AddToCartButton({ product }: { product: Product }) {
     const addItem = useCartStore((state) => state.addItem);
+    const [isAdding, setIsAdding] = useState(false);
+    const [isAdded, setIsAdded] = useState(false);
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (isAdding || isAdded) return;
+
+        setIsAdding(true);
+
+        // Simulate a small delay for premium feel
+        await new Promise(resolve => setTimeout(resolve, 600));
+
         addItem({
             id: product.id,
             name: product.name,
@@ -24,16 +36,42 @@ export default function AddToCartButton({ product }: { product: Product }) {
             imageUrl: product.imageUrl,
             category: product.category,
         });
+
+        setIsAdding(false);
+        setIsAdded(true);
+        showToast("Item added to cart", product.name);
+
+        setTimeout(() => {
+            setIsAdded(false);
+        }, 2000);
     };
 
     return (
-        <div
+        <button
             onClick={handleAddToCart}
-            className="w-full bg-black/90 backdrop-blur-sm text-white py-4 flex justify-center items-center gap-3 cursor-pointer hover:bg-black transition-colors"
+            disabled={isAdding || isAdded}
+            className={`w-full py-4 flex justify-center items-center gap-3 transition-all duration-300 active:scale-95 ${isAdded
+                ? "bg-green-600 text-white"
+                : "bg-black/90 backdrop-blur-sm text-white hover:bg-black"
+                } disabled:cursor-default`}
         >
-            <ShoppingBag className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Add to Cart</span>
-        </div>
+            {isAdding ? (
+                <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Adding...</span>
+                </>
+            ) : isAdded ? (
+                <>
+                    <Check className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Added!</span>
+                </>
+            ) : (
+                <>
+                    <ShoppingBag className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Add to Cart</span>
+                </>
+            )}
+        </button>
     );
 }
 

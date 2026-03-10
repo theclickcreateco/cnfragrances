@@ -32,8 +32,12 @@ export async function registerWithPhone(formData: FormData) {
         });
 
         return { success: true };
-    } catch (error) {
-        console.error("Registration error:", error);
-        return { success: false, error: "Failed to register" };
+    } catch (error: any) {
+        console.error("Registration error details:", {
+            message: error.message,
+            code: error.code,
+            meta: error.meta
+        });
+        return { success: false, error: `Registration error: ${error.message || "Unknown error"}` };
     }
 }

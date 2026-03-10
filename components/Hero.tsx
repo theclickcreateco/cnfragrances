@@ -7,7 +7,7 @@ export default function Hero() {
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/hero.png"
+                    src="/hero-image.jpg"
                     alt="Luxury Fragrance Collection"
                     fill
                     className="object-cover opacity-60"
@@ -49,8 +49,13 @@ export default function Hero() {
                 </div>
             </div>
 
-            {/* Decorative vertical line */}
+            {/* Decorative vertical line & Scroll indicator */}
             <div className="absolute left-8 bottom-0 h-24 w-px bg-white/20 hidden md:block"></div>
+
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-4 animate-bounce">
+                <span className="text-[8px] uppercase tracking-[0.4em] text-white/40 rotate-90 mb-8">Scroll</span>
+                <div className="w-px h-12 bg-gradient-to-b from-white/60 to-transparent"></div>
+            </div>
         </section>
     );
 }
