@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingBag, Check, Loader2 } from "lucide-react";
+import { ShoppingBag, Check, Loader2, AlertTriangle } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { showToast } from "./Toaster";
 
@@ -50,9 +50,12 @@ export default function AddToCartButton({ product }: { product: Product }) {
     return (
         <div className="space-y-2 w-full">
             {product.stock > 0 && product.stock <= 7 && (
-                <p className="text-[9px] text-orange-500 font-bold uppercase tracking-[0.2em] text-center animate-pulse">
-                    Only {product.stock} left in stock - Order Soon!
-                </p>
+                <div className="flex items-center justify-center gap-1.5 bg-amber-50 border border-amber-200 py-1.5 px-3">
+                    <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0" />
+                    <p className="text-[9px] text-amber-700 font-bold uppercase tracking-[0.15em]">
+                        Only {product.stock} left — Order Soon
+                    </p>
+                </div>
             )}
             <button
                 onClick={handleAddToCart}

@@ -5,6 +5,8 @@ import AddToCartButton from "@/components/AddToCartButton";
 import ScrollReveal from "@/components/ScrollReveal";
 import { prisma } from "@/app/db";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const featuredProducts = await prisma.product.findMany({
     where: { isFeatured: true },

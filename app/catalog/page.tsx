@@ -4,6 +4,8 @@ import { prisma } from "@/app/db";
 import AddToCartButton from "@/components/AddToCartButton";
 import ScrollReveal from "@/components/ScrollReveal";
 
+export const dynamic = 'force-dynamic';
+
 export default async function CatalogPage() {
     const products = await prisma.product.findMany({
         orderBy: { name: 'asc' }
