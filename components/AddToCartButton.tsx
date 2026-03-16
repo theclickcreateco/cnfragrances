@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingBag, Check, Loader2, AlertTriangle } from "lucide-react";
+import { ShoppingBag, Check, Loader2 } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { showToast } from "./Toaster";
 
@@ -48,45 +48,35 @@ export default function AddToCartButton({ product }: { product: Product }) {
     };
 
     return (
-        <div className="space-y-2 w-full">
-            {product.stock > 0 && product.stock <= 7 && (
-                <div className="flex items-center justify-center gap-1.5 bg-amber-50 border border-amber-200 py-1.5 px-3">
-                    <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0" />
-                    <p className="text-[9px] text-amber-700 font-bold uppercase tracking-[0.15em]">
-                        Only {product.stock} left — Order Soon
-                    </p>
-                </div>
-            )}
-            <button
-                onClick={handleAddToCart}
-                disabled={isAdding || isAdded || product.stock <= 0}
-                className={`w-full py-4 flex justify-center items-center gap-3 transition-all duration-300 active:scale-95 ${isAdded
+        <button
+            onClick={handleAddToCart}
+            disabled={isAdding || isAdded || product.stock <= 0}
+            className={`w-full py-4 flex justify-center items-center gap-3 transition-all duration-300 active:scale-95 ${
+                isAdded
                     ? "bg-green-600 text-white"
                     : product.stock <= 0
-                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : "bg-black/90 backdrop-blur-sm text-white hover:bg-black"
-                    } disabled:cursor-default`}
-            >
-                {product.stock <= 0 ? (
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Out of Stock</span>
-                ) : isAdding ? (
-                    <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Adding...</span>
-                    </>
-                ) : isAdded ? (
-                    <>
-                        <Check className="w-4 h-4" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Added!</span>
-                    </>
-                ) : (
-                    <>
-                        <ShoppingBag className="w-4 h-4" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Add to Cart</span>
-                    </>
-                )}
-            </button>
-        </div>
+            } disabled:cursor-default`}
+        >
+            {product.stock <= 0 ? (
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Out of Stock</span>
+            ) : isAdding ? (
+                <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Adding...</span>
+                </>
+            ) : isAdded ? (
+                <>
+                    <Check className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Added!</span>
+                </>
+            ) : (
+                <>
+                    <ShoppingBag className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Add to Cart</span>
+                </>
+            )}
+        </button>
     );
 }
-

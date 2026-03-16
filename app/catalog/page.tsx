@@ -43,6 +43,12 @@ export default async function CatalogPage() {
                                         {product.category}
                                     </span>
                                 </div>
+                                {/* Low Stock Badge */}
+                                {product.stock > 0 && product.stock <= 7 && (
+                                    <div className="absolute top-4 right-4 z-10 bg-red-600 text-white px-2.5 py-1 shadow-lg">
+                                        <span className="text-[8px] font-black uppercase tracking-widest">Only {product.stock} Left</span>
+                                    </div>
+                                )}
                                 <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 <div className="absolute bottom-0 left-0 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-20">
                                     <AddToCartButton product={product} />
