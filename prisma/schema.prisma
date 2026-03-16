@@ -63,7 +63,7 @@ model VerificationToken {
 // E-commerce Models
 model Product {
   id          String   @id @default(cuid())
-  name        String
+  name        String   @unique
   description String
   price       Float
   category    String   // e.g., "Men", "Women", "Unisex"

@@ -33,8 +33,9 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
             {featuredProducts.map((product, index) => (
-              <div
+              <Link
                 key={product.id}
+                href={`/product/${product.id}`}
                 className="group relative flex flex-col bg-transparent pb-8 transition-all duration-500 reveal reveal-up"
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
@@ -64,15 +65,13 @@ export default async function Home() {
                 {/* Product Details */}
                 <div className="space-y-3 px-1">
                   <div className="flex justify-between items-start gap-2">
-                    <Link href={`/product/${product.id}`} className="block group/link">
-                      <h3 className="text-base font-medium text-gray-900 group-hover/link:text-gray-500 transition-colors uppercase tracking-wide leading-snug">
-                        {product.name}
-                      </h3>
-                    </Link>
+                    <h3 className="text-base font-medium text-gray-900 group-hover:text-gray-500 transition-colors uppercase tracking-wide leading-snug">
+                      {product.name}
+                    </h3>
                   </div>
                   <p className="text-gray-900 font-semibold text-lg">Rs. {product.price.toFixed(2)}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

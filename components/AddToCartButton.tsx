@@ -11,6 +11,7 @@ interface Product {
     price: number;
     imageUrl: string;
     category: string;
+    stock: number;
 }
 
 export default function AddToCartButton({ product }: { product: Product }) {
@@ -22,7 +23,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (isAdding || isAdded) return;
+        if (isAdding || isAdded || product.stock <= 0) return;
 
         setIsAdding(true);
 
@@ -47,31 +48,42 @@ export default function AddToCartButton({ product }: { product: Product }) {
     };
 
     return (
-        <button
-            onClick={handleAddToCart}
-            disabled={isAdding || isAdded}
-            className={`w-full py-4 flex justify-center items-center gap-3 transition-all duration-300 active:scale-95 ${isAdded
-                ? "bg-green-600 text-white"
-                : "bg-black/90 backdrop-blur-sm text-white hover:bg-black"
-                } disabled:cursor-default`}
-        >
-            {isAdding ? (
-                <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Adding...</span>
-                </>
-            ) : isAdded ? (
-                <>
-                    <Check className="w-4 h-4" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Added!</span>
-                </>
-            ) : (
-                <>
-                    <ShoppingBag className="w-4 h-4" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Add to Cart</span>
-                </>
+        <div className="space-y-2 w-full">
+            {product.stock > 0 && product.stock <= 7 && (
+                <p className="text-[9px] text-orange-500 font-bold uppercase tracking-[0.2em] text-center animate-pulse">
+                    Only {product.stock} left in stock - Order Soon!
+                </p>
             )}
-        </button>
+            <button
+                onClick={handleAddToCart}
+                disabled={isAdding || isAdded || product.stock <= 0}
+                className={`w-full py-4 flex justify-center items-center gap-3 transition-all duration-300 active:scale-95 ${isAdded
+                    ? "bg-green-600 text-white"
+                    : product.stock <= 0
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-black/90 backdrop-blur-sm text-white hover:bg-black"
+                    } disabled:cursor-default`}
+            >
+                {product.stock <= 0 ? (
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Out of Stock</span>
+                ) : isAdding ? (
+                    <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Adding...</span>
+                    </>
+                ) : isAdded ? (
+                    <>
+                        <Check className="w-4 h-4" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Added!</span>
+                    </>
+                ) : (
+                    <>
+                        <ShoppingBag className="w-4 h-4" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Add to Cart</span>
+                    </>
+                )}
+            </button>
+        </div>
     );
 }
 

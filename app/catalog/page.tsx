@@ -23,7 +23,8 @@ export default async function CatalogPage() {
                 {/* Products Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
                     {products.map((product, index) => (
-                        <div
+                        <Link
+                            href={`/product/${product.id}`}
                             key={product.id}
                             className="group flex flex-col reveal reveal-up"
                             style={{ transitionDelay: `${(index % 4) * 100}ms` }}
@@ -47,14 +48,12 @@ export default async function CatalogPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Link href={`/product/${product.id}`} className="block">
-                                    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900 group-hover:text-gray-500 transition-colors">
-                                        {product.name}
-                                    </h3>
-                                </Link>
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900 group-hover:text-gray-500 transition-colors">
+                                    {product.name}
+                                </h3>
                                 <p className="text-gray-600 font-medium tracking-wide">Rs. {product.price.toFixed(2)}</p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
 
