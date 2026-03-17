@@ -46,7 +46,7 @@ export async function createOrder(data: {
                 })
             }
 
-            // 2. Create the order
+            // 2. Create the order with included names for notification
             const order = await tx.order.create({
                 data: {
                     trackingId: data.trackingId,
@@ -63,15 +63,6 @@ export async function createOrder(data: {
                         })),
                     },
                 },
-            })
-
-            return order
-        })
-
-        // 3. Send Notifications (Async/Background-ish)
-        try {
-            const orderWithDetails = await prisma.order.findUnique({
-                where: { id: result.id },
                 include: {
                     orderItems: {
                         include: {
@@ -83,29 +74,35 @@ export async function createOrder(data: {
                 }
             })
 
-            if (orderWithDetails) {
-                const notificationData = {
-                    trackingId: orderWithDetails.trackingId,
-                    customerName: session?.user?.name || undefined,
-                    customerEmail: orderWithDetails.contactEmail,
-                    customerPhone: orderWithDetails.contactPhone,
-                    shippingAddress: orderWithDetails.shippingAddress,
-                    totalAmount: orderWithDetails.totalAmount,
-                    items: orderWithDetails.orderItems.map(item => ({
-                        productName: item.product.name,
-                        quantity: item.quantity,
-                        price: item.price
-                    }))
-                }
+            return order
+        }, {
+            maxWait: 5000, // default is 2000
+            timeout: 10000, // default is 5000
+        })
 
-                // We don't await this to avoid blocking the user response, 
-                // but since it's a server action it might need to complete.
-                // For direct feedback, we'll let it run.
-                await sendOrderNotification(notificationData)
+        // 3. Send Notifications (Async/Background-ish)
+        // We have 'result' which now contains orderItems and products
+        try {
+            const notificationData = {
+                trackingId: result.trackingId,
+                customerName: session?.user?.name || undefined,
+                customerEmail: result.contactEmail,
+                customerPhone: result.contactPhone,
+                shippingAddress: result.shippingAddress,
+                totalAmount: result.totalAmount,
+                items: result.orderItems.map(item => ({
+                    productName: item.product.name,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
             }
+
+            // Fire and forget (almost) - we don't await this if we want fast response,
+            // but in a Server Action, awaiting is generally safer to ensure it finishes.
+            // However, we'll keep it awaited but ensure it doesn't block the transaction result.
+            await sendOrderNotification(notificationData)
         } catch (notifError) {
             console.error('Failed to send order notification:', notifError)
-            // We don't throw here as the order IS created
         }
 
         console.log('Order created successfully in database:', result.id)
