@@ -2,6 +2,7 @@
 
 import { prisma } from '@/app/db'
 import { auth } from '@/auth'
+import { sendOrderNotification } from '@/lib/notifications'
 
 export async function createOrder(data: {
     trackingId: string;
@@ -66,6 +67,46 @@ export async function createOrder(data: {
 
             return order
         })
+
+        // 3. Send Notifications (Async/Background-ish)
+        try {
+            const orderWithDetails = await prisma.order.findUnique({
+                where: { id: result.id },
+                include: {
+                    orderItems: {
+                        include: {
+                            product: {
+                                select: { name: true }
+                            }
+                        }
+                    }
+                }
+            })
+
+            if (orderWithDetails) {
+                const notificationData = {
+                    trackingId: orderWithDetails.trackingId,
+                    customerName: session?.user?.name || undefined,
+                    customerEmail: orderWithDetails.contactEmail,
+                    customerPhone: orderWithDetails.contactPhone,
+                    shippingAddress: orderWithDetails.shippingAddress,
+                    totalAmount: orderWithDetails.totalAmount,
+                    items: orderWithDetails.orderItems.map(item => ({
+                        productName: item.product.name,
+                        quantity: item.quantity,
+                        price: item.price
+                    }))
+                }
+
+                // We don't await this to avoid blocking the user response, 
+                // but since it's a server action it might need to complete.
+                // For direct feedback, we'll let it run.
+                await sendOrderNotification(notificationData)
+            }
+        } catch (notifError) {
+            console.error('Failed to send order notification:', notifError)
+            // We don't throw here as the order IS created
+        }
 
         console.log('Order created successfully in database:', result.id)
         return { success: true, orderId: result.id }
