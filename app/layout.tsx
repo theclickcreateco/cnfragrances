@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 
 import Toaster from "@/components/Toaster";
 import Providers from "@/components/Providers";
+import MobileMenu from "@/components/MobileMenu";
 
 export default function RootLayout({
   children,
@@ -40,6 +41,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <MobileMenu />
           <Toaster />
         </Providers>
         {process.env.NEXT_PUBLIC_GA_ID && (

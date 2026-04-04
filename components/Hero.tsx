@@ -7,10 +7,10 @@ export default function Hero() {
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/hero-image.jpg"
+                    src="/hero-image-2.jpg"
                     alt="Luxury Fragrance Collection"
                     fill
-                    className="object-cover opacity-60"
+                    className="object-cover opacity-90"
                     priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
