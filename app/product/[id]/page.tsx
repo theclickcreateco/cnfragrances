@@ -137,7 +137,10 @@ export default function ProductPage() {
 
                             <h1 className="text-4xl md:text-5xl font-serif uppercase tracking-tight leading-tight">{product.name}</h1>
                             <div className="flex items-center gap-4 flex-wrap">
-                                <p className="text-2xl font-light text-gray-900 tracking-wide">Rs. {product.price.toLocaleString()}</p>
+                                <p className="text-2xl font-light text-gray-900 tracking-wide">Rs. {(product.discountPrice ?? product.originalPrice).toLocaleString()}</p>
+                                {product.discountPrice && (
+                                    <p className="text-gray-400 text-lg line-through decoration-gray-400/50">Rs. {product.originalPrice.toLocaleString()}</p>
+                                )}
                                 {product.stock === 0 && (
                                     <span className="bg-gray-900 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5">
                                         Out of Stock

@@ -8,10 +8,15 @@ import { prisma } from "@/app/db";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const featuredProducts = await prisma.product.findMany({
-    where: { isFeatured: true },
-    take: 5,
-  });
+  let featuredProducts: any[] = [];
+  try {
+    featuredProducts = await prisma.product.findMany({
+      where: { isFeatured: true },
+      take: 5,
+    });
+  } catch (error) {
+    console.error("Server Error: Failed to fetch products from db.", error);
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -50,11 +55,16 @@ export default async function Home() {
                     className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
                   />
 
-                  {/* Category Badge */}
-                  <div className="absolute top-4 left-4 z-10">
+                  {/* Category & Sale Badges */}
+                  <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                     <span className="bg-white/90 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-black shadow-sm">
                       {product.category}
                     </span>
+                    {product.discountPrice && (
+                      <span className="bg-gold-500 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                        Sale
+                      </span>
+                    )}
                   </div>
 
                   {/* Low Stock Badge */}
@@ -78,7 +88,12 @@ export default async function Home() {
                       {product.name}
                     </h3>
                   </div>
-                  <p className="text-gray-900 font-semibold text-lg">Rs. {product.price.toFixed(2)}</p>
+                  <div className="flex items-baseline gap-3">
+                    <p className="text-gray-900 font-semibold text-lg">Rs. {(product.discountPrice ?? product.originalPrice).toLocaleString()}</p>
+                    {product.discountPrice && (
+                      <p className="text-gray-400 text-sm line-through decoration-gray-400/50">Rs. {product.originalPrice.toLocaleString()}</p>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))}

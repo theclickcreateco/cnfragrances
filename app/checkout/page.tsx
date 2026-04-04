@@ -282,7 +282,12 @@ export default function CheckoutPage() {
                                                     <Plus className="w-3 h-3" />
                                                 </button>
                                             </div>
-                                            <p className="text-sm font-semibold">Rs. {(item.price * item.quantity).toFixed(2)}</p>
+                                            <div className="text-right">
+                                                <p className="text-sm font-semibold">Rs. {(item.price * item.quantity).toLocaleString()}</p>
+                                                {item.discountPrice && (
+                                                    <p className="text-[10px] text-gray-400 line-through decoration-gray-400/50">Rs. {(item.originalPrice * item.quantity).toLocaleString()}</p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -292,7 +297,7 @@ export default function CheckoutPage() {
                         <div className="border-t border-gray-200 pt-6 space-y-4">
                             <div className="flex justify-between text-sm text-gray-600">
                                 <span>Subtotal</span>
-                                <span>Rs. {totalPrice().toFixed(2)}</span>
+                                <span>Rs. {totalPrice().toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-600">
                                 <span>Shipping</span>
@@ -300,7 +305,7 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex justify-between text-lg font-medium text-gray-900 pt-4 border-t border-gray-200">
                                 <span>Total</span>
-                                <span>Rs. {totalPrice().toFixed(2)}</span>
+                                <span>Rs. {totalPrice().toLocaleString()}</span>
                             </div>
                         </div>
 

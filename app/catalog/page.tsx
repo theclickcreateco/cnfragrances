@@ -38,10 +38,15 @@ export default async function CatalogPage() {
                                     fill
                                     className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
                                 />
-                                <div className="absolute top-4 left-4 z-10">
+                                <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                                     <span className="bg-white/90 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-black shadow-sm">
                                         {product.category}
                                     </span>
+                                    {product.discountPrice && (
+                                        <span className="bg-gold-500 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                            Sale
+                                        </span>
+                                    )}
                                 </div>
                                 {/* Low Stock Badge */}
                                 {product.stock > 0 && product.stock <= 7 && (
@@ -59,7 +64,12 @@ export default async function CatalogPage() {
                                 <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900 group-hover:text-gray-500 transition-colors">
                                     {product.name}
                                 </h3>
-                                <p className="text-gray-600 font-medium tracking-wide">Rs. {product.price.toFixed(2)}</p>
+                                <div className="flex items-baseline gap-2">
+                                    <p className="text-gray-900 font-bold tracking-tight">Rs. {(product.discountPrice ?? product.originalPrice).toLocaleString()}</p>
+                                    {product.discountPrice && (
+                                        <p className="text-gray-400 text-xs line-through decoration-gray-400/50">Rs. {product.originalPrice.toLocaleString()}</p>
+                                    )}
+                                </div>
                             </div>
                         </Link>
                     ))}

@@ -8,7 +8,8 @@ import { showToast } from "./Toaster";
 interface Product {
     id: string;
     name: string;
-    price: number;
+    originalPrice: number;
+    discountPrice: number | null;
     imageUrl: string;
     category: string;
     stock: number;
@@ -33,7 +34,9 @@ export default function AddToCartButton({ product }: { product: Product }) {
         addItem({
             id: product.id,
             name: product.name,
-            price: product.price,
+            price: product.discountPrice ?? product.originalPrice,
+            originalPrice: product.originalPrice,
+            discountPrice: product.discountPrice,
             imageUrl: product.imageUrl,
             category: product.category,
         });

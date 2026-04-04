@@ -65,7 +65,8 @@ model Product {
   id          String   @id @default(cuid())
   name        String   @unique
   description String
-  price       Float
+  originalPrice Float
+  discountPrice Float?
   category    String   // e.g., "Men", "Women", "Unisex"
   imageUrl    String
   stock       Int      @default(0)
