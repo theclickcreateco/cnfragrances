@@ -19,7 +19,7 @@ export default function Header() {
     }, []);
 
     return (
-        <header className={`fixed w-full top-0 z-50 transition-all duration-500 ${scrolled
+        <header className={`fixed w-full top-9 z-50 transition-all duration-500 ${scrolled
             ? "bg-white/90 backdrop-blur-md border-b border-gray-100 py-0"
             : "bg-transparent border-transparent py-2"
             }`}>
