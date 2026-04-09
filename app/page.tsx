@@ -3,16 +3,28 @@ import Image from "next/image";
 import Hero from "@/components/Hero";
 import AddToCartButton from "@/components/AddToCartButton";
 import ScrollReveal from "@/components/ScrollReveal";
+import DiscoveryFeature from "@/components/DiscoveryFeature";
 import { prisma } from "@/app/db";
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   let featuredProducts: any[] = [];
+  let discoverySet: any = null;
+  
   try {
+    // Fetch individual products (excluding the set)
     featuredProducts = await prisma.product.findMany({
-      where: { isFeatured: true },
+      where: { 
+        isFeatured: true,
+        NOT: { name: "THE DISCOVERY SET" }
+      },
       take: 5,
+    });
+
+    // Fetch the discovery set specifically
+    discoverySet = await prisma.product.findFirst({
+      where: { name: "THE DISCOVERY SET" }
     });
   } catch (error) {
     console.error("Server Error: Failed to fetch products from db.", error);
@@ -100,6 +112,9 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Discovery Feature Section */}
+      <DiscoveryFeature product={discoverySet} />
 
       {/* The Fragrance Journey Section */}
       <section className="py-24 bg-white">
